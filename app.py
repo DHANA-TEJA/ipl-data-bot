@@ -16,7 +16,7 @@ from langchain_google_genai import GoogleGenerativeAI
 
 @st.cache_data
 def load_matches():
-    df = pd.read_csv("data/df_matches", parse_dates=["date"])
+    df = pd.read_csv(r"data/df_matches", parse_dates=["date"])
     df['season'] = df['season'].astype(str).str.strip()
     for col in ['team1', 'team2', 'winner']:
         if col in df.columns:
@@ -25,7 +25,7 @@ def load_matches():
 
 @st.cache_data
 def load_deliveries():
-    df = pd.read_csv("data\deliver_df")
+    df = pd.read_csv(r"data\deliver_df")
     for col in ['batting_team', 'bowling_team', 'player_dismissed', 'batter', 'bowler']:
         if col in df.columns:
             df[col] = df[col].astype(str).str.strip()
