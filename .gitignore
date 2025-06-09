@@ -1,0 +1,25 @@
+# Ignore virtual environments
+.venv/
+venv/
+
+# Ignore environment variables file
+.env
+
+# Ignore Python bytecode
+__pycache__/
+*.py[cod]
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore data backups, logs, etc.
+*.log
+*.bak
+
+# (Optional) Ignore large data files
+# data/*.csv  (Remove this if you want to keep your CSVs public)
+
+# Ignore IDE configurations
+.vscode/
+.idea/
