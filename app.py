@@ -233,7 +233,7 @@ df_deliveries = pd.read_csv(StringIO(csv_deliveries))
         with st.spinner("Generating answer..."):
             try:
                 answer = agent.invoke(user_question)
-                st.markdown(f"**{answer}**")
+                st.markdown(f"**{answer['output']}**")
             except Exception as e:
                 st.error(f"Error running agent: {e}")
 
