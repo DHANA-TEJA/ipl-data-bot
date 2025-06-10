@@ -224,11 +224,11 @@ df_deliveries = pd.read_csv(StringIO(csv_deliveries))
             llm,
             [filtered_matches, filtered_deliveries],
             extra_tools=[repl_tool],
-            handle_parsing_errors=True,
+            # handle_parsing_errors=True,
             verbose=True,
             allow_dangerous_code=True
         )
-
+        st.mardown(api_key )
         st.markdown("### Answer from GoogleGenerativeAI:")
         with st.spinner("Generating answer..."):
             try:
