@@ -25,7 +25,7 @@ def load_matches():
 
 @st.cache_data
 def load_deliveries():
-    df = pd.read_csv(r"/DHANA-TEJA/ipl-data-bot/blob/main/data/deliver_df.csv.gz")
+    df = pd.read_csv(r"data/deliver_df.csv.gz")
     for col in ['batting_team', 'bowling_team', 'player_dismissed', 'batter', 'bowler']:
         if col in df.columns:
             df[col] = df[col].astype(str).str.strip()
