@@ -212,6 +212,7 @@ df_deliveries = pd.read_csv(StringIO(csv_deliveries))
 
         load_dotenv()
         api_key = os.getenv("GOOGLE_API_KEY")
+        st.markdown(f"**Google API Key:** `{api_key}`")
 
         llm = GoogleGenerativeAI(
             model="gemini-2.0-flash",
@@ -228,7 +229,7 @@ df_deliveries = pd.read_csv(StringIO(csv_deliveries))
             verbose=True,
             allow_dangerous_code=True
         )
-        st.mardown(api_key )
+    
         st.markdown("### Answer from GoogleGenerativeAI:")
         with st.spinner("Generating answer..."):
             try:
