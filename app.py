@@ -25,7 +25,7 @@ def load_matches():
 
 @st.cache_data
 def load_deliveries():
-    df = pd.read_csv("data\deliver_df.csv.gz")
+    df = pd.read_csv(r"data/deliver_df.csv.gz")
     for col in ['batting_team', 'bowling_team', 'player_dismissed', 'batter', 'bowler']:
         if col in df.columns:
             df[col] = df[col].astype(str).str.strip()
@@ -224,15 +224,15 @@ df_deliveries = pd.read_csv(StringIO(csv_deliveries))
             llm,
             [filtered_matches, filtered_deliveries],
             extra_tools=[repl_tool],
-            handle_parsing_errors=True,
+            # handle_parsing_errors=True,
             verbose=True,
             allow_dangerous_code=True
         )
-
+    
         st.markdown("### Answer from GoogleGenerativeAI:")
         with st.spinner("Generating answer..."):
             try:
-                answer = agent.run(user_question)
+                answer = agent.invoke(user_question)
                 st.markdown(f"**{answer}**")
             except Exception as e:
                 st.error(f"Error running agent: {e}")
