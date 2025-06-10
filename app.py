@@ -232,7 +232,7 @@ df_deliveries = pd.read_csv(StringIO(csv_deliveries))
         st.markdown("### Answer from GoogleGenerativeAI:")
         with st.spinner("Generating answer..."):
             try:
-                answer = agent.run(user_question)
+                answer = agent.invoke(user_question)
                 st.markdown(f"**{answer}**")
             except Exception as e:
                 st.error(f"Error running agent: {e}")
