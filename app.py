@@ -210,8 +210,8 @@ df_deliveries = pd.read_csv(StringIO(csv_deliveries))
             func=execute_user_code
         )
 
-        load_dotenv()
-        api_key = os.getenv("GOOGLE_API_KEY")
+        api_key = st.secrets["api_keys"]["google_api_key"]
+
 
         llm = GoogleGenerativeAI(
             model="gemini-2.0-flash",
