@@ -217,6 +217,7 @@ df_deliveries = pd.read_csv(StringIO(csv_deliveries))
             model="gemini-2.0-flash",
             temperature=0.0,
             max_output_tokens=1000,
+            handle_parsing_errors=True,
             google_api_key=api_key 
         )
 
