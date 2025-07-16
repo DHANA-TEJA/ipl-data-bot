@@ -3,16 +3,10 @@ import pandas as pd
 import re
 import datetime
 from io import StringIO
-import os 
-from dotenv import load_dotenv
-
-
 from langchain_experimental.agents import create_pandas_dataframe_agent
 from langchain_experimental.utilities import PythonREPL
 from langchain.tools import Tool
 from langchain_google_genai import GoogleGenerativeAI
-
-
 
 @st.cache_data
 def load_matches():
@@ -25,12 +19,11 @@ def load_matches():
 
 @st.cache_data
 def load_deliveries():
-    df = pd.read_csv(r"data/deliver_df.csv.gz")
+    df = pd.read_csv("data/deliver_df.csv.gz")
     for col in ['batting_team', 'bowling_team', 'player_dismissed', 'batter', 'bowler']:
         if col in df.columns:
             df[col] = df[col].astype(str).str.strip()
     return df
-
 
 def get_unique_teams(df_matches, df_deliveries):
     teams_matches = pd.concat([df_matches['team1'], df_matches['team2']]).unique()
@@ -47,8 +40,7 @@ def get_unique_match_types(df):
 def get_unique_players(df_deliveries):
     players = pd.concat([df_deliveries['batter'], df_deliveries['bowler'], df_deliveries['player_dismissed']])
     players = players.dropna().unique()
-    players = [p.strip() for p in players if p.strip() != '']
-    return players
+    return [p.strip() for p in players if p.strip() != '']
 
 def extract_filters(question, teams, match_types, players):
     q = question.lower()
@@ -134,8 +126,7 @@ def filter_deliveries(df, filters):
 
     return filtered
 
-# -- MAIN APP --
-
+# MAIN APP
 def main():
     st.title("IPL Q&A with Google Generative AI")
 
@@ -149,9 +140,14 @@ def main():
     user_question = st.text_input("Ask your IPL question:")
 
     if user_question:
+        casual_phrases = ['hi', 'hello', 'hey', 'what can you do', 'help', 'who are you', 'yo']
+        user_lower = user_question.lower().strip()
+
+        if any(p in user_lower for p in casual_phrases):
+            st.markdown("👋 Hello! I’m your IPL assistant. Ask me things like:\n- 'RCB matches in 2020'\n- 'Wickets by Bumrah in 2019'\n- 'Who won on 2018-04-07?'\n")
+            return
+
         filters = extract_filters(user_question, teams, match_types, players)
-        st.markdown("### Extracted Filters:")
-        st.json(filters)
 
         filtered_matches = filter_matches(df_matches, filters)
 
@@ -163,12 +159,6 @@ def main():
 
         filtered_deliveries = filter_deliveries(filtered_deliveries, filters)
 
-        st.markdown(f"### Filtered Matches: {len(filtered_matches)} rows")
-        st.dataframe(filtered_matches)
-
-        st.markdown(f"### Filtered Deliveries: {len(filtered_deliveries)} rows")
-        st.dataframe(filtered_deliveries)
-
         if filtered_matches.empty and filtered_deliveries.empty:
             st.warning("No data found for your query filters.")
             return
@@ -176,14 +166,10 @@ def main():
         python_repl = PythonREPL()
 
         def execute_user_code(user_code):
-            
             user_code_cleaned = re.sub(r"^```(?:python)?|```$", "", user_code.strip(), flags=re.MULTILINE).strip()
-
-            
             csv_matches = filtered_matches.to_csv(index=False)
             csv_deliveries = filtered_deliveries.to_csv(index=False)
 
-            
             wrapped_code = f'''
 import pandas as pd
 from io import StringIO
@@ -193,32 +179,25 @@ csv_deliveries = """{csv_deliveries}"""
 
 df_matches = pd.read_csv(StringIO(csv_matches))
 df_deliveries = pd.read_csv(StringIO(csv_deliveries))
+df = df_matches  # 👈 compatibility fix
 
 {user_code_cleaned}
 '''
-
-            # Run wrapped code inside PythonREPL
             return python_repl.run(wrapped_code)
-
 
         repl_tool = Tool(
             name="python_repl",
-            description=(
-                "Python REPL to execute code on filtered IPL dataframes df_matches and df_deliveries. "
-                "Use print() to output your results."
-            ),
+            description="Python REPL to execute code on filtered IPL dataframes df_matches and df_deliveries. Use print() to output your results.",
             func=execute_user_code
         )
 
-        api_key = st.secrets["api_keys"]["google_api_key"]
-
+        api_key = "AIzaSyA5MYH5cZ9uIVOql7xQRHrLMSsveBPuZfY"  # Replace with your actual or env key
 
         llm = GoogleGenerativeAI(
             model="gemini-2.0-flash",
             temperature=0.0,
             max_output_tokens=1000,
-            handle_parsing_errors=True,
-            google_api_key=api_key 
+            google_api_key=api_key
         )
 
         agent = create_pandas_dataframe_agent(
@@ -229,7 +208,7 @@ df_deliveries = pd.read_csv(StringIO(csv_deliveries))
             verbose=True,
             allow_dangerous_code=True
         )
-    
+
         st.markdown("### Answer from GoogleGenerativeAI:")
         with st.spinner("Generating answer..."):
             try:
